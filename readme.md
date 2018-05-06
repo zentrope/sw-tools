@@ -1,8 +1,12 @@
 # sw-tools
 
-Small project for writing tiny command line tools in Swift.
+Small project for writing tiny command line tools in Swift. This repo
+is also a handy way of remembering how to do CLI related techniques,
+such as parsing CLI arguments, or working with files and directories.
 
-- **uuid** --- UUID generator.
+## Tools
+
+- **uuid**: UUID generator.
 
 ## License
 

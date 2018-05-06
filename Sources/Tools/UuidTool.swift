@@ -37,7 +37,7 @@ public final class UuidTool {
             option: "--number",
             shortName: "-n",
             kind: Int.self,
-            usage: "The number of UUIDs to generate.")
+            usage: "The number of UUIDs to generate (default 10).")
 
         let uppercased: OptionArgument<Bool> = parser.add(
             option: "--uppercased",

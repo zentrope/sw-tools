@@ -17,29 +17,46 @@
 //-----------------------------------------------------------------------------
 
 import Foundation
+import Utility
 
 public final class UuidTool {
 
-    private let arguments: [String]
+    private let arguments: Array<String>
 
     public init(arguments: [String] = CommandLine.arguments) {
-        self.arguments = arguments
-    }
-
-    private func makeUuid() -> String {
-        return NSUUID().uuidString.lowercased()
+        self.arguments = Array(arguments.dropFirst())
     }
 
     public func run() throws {
 
-        var reps = 10
+        let parser = ArgumentParser(
+            usage: "<options>",
+            overview: "Generage UUIDs.")
 
-        if (arguments.count > 1) {
-            reps = Int(arguments[1]) ?? 10
-        }
+        let number: OptionArgument<Int> = parser.add(
+            option: "--number",
+            shortName: "-n",
+            kind: Int.self,
+            usage: "The number of UUIDs to generate.")
 
-        for _ in  1...reps {
-            print(makeUuid())
+        let uppercased: OptionArgument<Bool> = parser.add(
+            option: "--uppercased",
+            shortName: "-u",
+            kind: Bool.self,
+            usage: "Uppercase the UUIDS.")
+
+        let options = try parser.parse(self.arguments)
+
+        let reps = options.get(number) ?? 10
+        let uc = options.get(uppercased) == true
+
+        for _ in 1...reps {
+            let uuid = NSUUID().uuidString
+            if uc {
+                print(uuid)
+            } else {
+                print(uuid.lowercased())
+            }
         }
     }
 }

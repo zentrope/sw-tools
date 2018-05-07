@@ -27,7 +27,7 @@ public final class UuidTool {
         self.arguments = Array(arguments.dropFirst())
     }
 
-    public func run() throws {
+    public func run() throws -> Array<String> {
 
         let parser = ArgumentParser(
             usage: "<options>",
@@ -50,13 +50,17 @@ public final class UuidTool {
         let reps = options.get(number) ?? 10
         let uc = options.get(uppercased) == true
 
+        var results = Array<String>()
+
         for _ in 1...reps {
             let uuid = NSUUID().uuidString
             if uc {
-                print(uuid)
+                results.append(uuid)
             } else {
-                print(uuid.lowercased())
+                results.append(uuid.lowercased())
             }
         }
+
+        return results
     }
 }

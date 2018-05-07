@@ -21,7 +21,10 @@ import Tools
 let tool = UuidTool()
 
 do {
-    try tool.run()
+    let results = try tool.run()
+    for uuid in results {
+        print(uuid)
+    }
 } catch {
     print("ERROR: \(error)")
 }

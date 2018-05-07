@@ -20,13 +20,13 @@
 import PackageDescription
 
 let package = Package(
-    name: "tools",
-    dependencies: [
-      .package(url: "https://github.com/apple/swift-package-manager.git", from: "0.2.0"),
-    ],
-    targets: [
-      .target(name: "uuid", dependencies: ["Tools"]),
-      .target(name: "Tools", dependencies: ["Utility"]),
-      .testTarget(name: "ToolTests", dependencies: ["Tools"])
-    ]
+  name: "tools",
+  dependencies: [
+    .package(url: "https://github.com/apple/swift-package-manager.git", from: "0.2.0"),
+  ],
+  targets: [
+    .target(name: "uuid", dependencies: ["Tools"]),
+    .target(name: "Tools", dependencies: ["Utility"]),
+    .testTarget(name: "ToolTests", dependencies: ["Tools"])
+  ]
 )

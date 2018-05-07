@@ -20,47 +20,47 @@ import Foundation
 import Utility
 
 public final class UuidTool {
-
-    private let arguments: Array<String>
-
-    public init(arguments: [String] = CommandLine.arguments) {
-        self.arguments = Array(arguments.dropFirst())
+  
+  private let arguments: Array<String>
+  
+  public init(arguments: [String] = CommandLine.arguments) {
+    self.arguments = Array(arguments.dropFirst())
+  }
+  
+  public func run() throws -> Array<String> {
+    
+    let parser = ArgumentParser(
+      usage: "<options>",
+      overview: "Generage UUIDs.")
+    
+    let number: OptionArgument<Int> = parser.add(
+      option: "--number",
+      shortName: "-n",
+      kind: Int.self,
+      usage: "The number of UUIDs to generate (default 10).")
+    
+    let uppercased: OptionArgument<Bool> = parser.add(
+      option: "--uppercased",
+      shortName: "-u",
+      kind: Bool.self,
+      usage: "Uppercase the UUIDS.")
+    
+    let options = try parser.parse(self.arguments)
+    
+    let reps = options.get(number) ?? 10
+    let uc = options.get(uppercased) == true
+    
+    var results = Array<String>()
+    
+    for _ in 1...reps {
+      let uuid = NSUUID().uuidString
+      if uc {
+        results.append(uuid)
+      } else {
+        results.append(uuid.lowercased())
+      }
     }
-
-    public func run() throws -> Array<String> {
-
-        let parser = ArgumentParser(
-            usage: "<options>",
-            overview: "Generage UUIDs.")
-
-        let number: OptionArgument<Int> = parser.add(
-            option: "--number",
-            shortName: "-n",
-            kind: Int.self,
-            usage: "The number of UUIDs to generate (default 10).")
-
-        let uppercased: OptionArgument<Bool> = parser.add(
-            option: "--uppercased",
-            shortName: "-u",
-            kind: Bool.self,
-            usage: "Uppercase the UUIDS.")
-
-        let options = try parser.parse(self.arguments)
-
-        let reps = options.get(number) ?? 10
-        let uc = options.get(uppercased) == true
-
-        var results = Array<String>()
-
-        for _ in 1...reps {
-            let uuid = NSUUID().uuidString
-            if uc {
-                results.append(uuid)
-            } else {
-                results.append(uuid.lowercased())
-            }
-        }
-
-        return results
-    }
+    
+    return results
+  }
 }

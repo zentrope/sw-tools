@@ -23,14 +23,16 @@
 .DEFAULT_GOAL := help
 
 clean:
-	rm -rf .build
+	swift package clean
 
 build:
 	swift build
 
 release:
-	swift build -c release -Xswiftc -static-stdlib
+	swift build -c release --static-swift-stdlib
 
+test:
+	swift test
 
 help: ## Show makefile based help
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) \

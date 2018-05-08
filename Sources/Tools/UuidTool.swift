@@ -20,47 +20,51 @@ import Foundation
 import Utility
 
 public final class UuidTool {
-  
+
+  public static let MIN_UUIDS = 1
+  public static let MAX_UUIDS = 1024
+
   private let arguments: Array<String>
   
   public init(arguments: [String] = CommandLine.arguments) {
     self.arguments = Array(arguments.dropFirst())
   }
-  
+
+  private func setBounds(n: Int) -> Int {
+    if n < UuidTool.MIN_UUIDS {
+      return UuidTool.MIN_UUIDS
+    }
+    if n > UuidTool.MAX_UUIDS {
+      return UuidTool.MAX_UUIDS
+    }
+    return n
+  }
+
   public func run() throws -> Array<String> {
     
     let parser = ArgumentParser(
       usage: "<options>",
-      overview: "Generage UUIDs.")
+      overview: "Generate a UUID.")
     
     let number: OptionArgument<Int> = parser.add(
       option: "--number",
       shortName: "-n",
       kind: Int.self,
-      usage: "The number of UUIDs to generate (default 10).")
+      usage: "The number of UUIDs to generate.")
     
     let uppercased: OptionArgument<Bool> = parser.add(
       option: "--uppercased",
       shortName: "-u",
       kind: Bool.self,
-      usage: "Uppercase the UUIDS.")
+      usage: "Uppercase the UUID(s).")
     
     let options = try parser.parse(self.arguments)
     
-    let reps = options.get(number) ?? 10
+    let reps = self.setBounds(n: options.get(number) ?? UuidTool.MIN_UUIDS)
     let uc = options.get(uppercased) == true
-    
-    var results = Array<String>()
-    
-    for _ in 1...reps {
-      let uuid = NSUUID().uuidString
-      if uc {
-        results.append(uuid)
-      } else {
-        results.append(uuid.lowercased())
-      }
-    }
-    
-    return results
+
+    return stride(from: 0, to: reps, by: 1)
+      .map({ _ in NSUUID().uuidString })
+      .map({ uc ? $0.uppercased() : $0 })
   }
 }

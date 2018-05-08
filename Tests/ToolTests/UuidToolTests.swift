@@ -26,6 +26,20 @@ class UidToolTests: XCTestCase {
     XCTAssertNotEqual(uuid, uuid.lowercased())
   }
 
+  func runTool(args: [String]) throws -> Array<String> {
+    return try UuidTool(arguments: args).run()
+  }
+
+  func testToLowResetsToZero() throws {
+    XCTAssertEqual(try runTool(args: ["_", "-n", "0"]).count, UuidTool.MIN_UUIDS)
+    XCTAssertEqual(try runTool(args: ["_", "-n", "-2"]).count, UuidTool.MIN_UUIDS)
+  }
+
+  func testToHighResetsBounds() throws {
+    XCTAssertEqual(try runTool(args: ["_", "-n", "1025"]).count, UuidTool.MAX_UUIDS)
+    XCTAssertEqual(try runTool(args: ["_", "-n", "200000"]).count, UuidTool.MAX_UUIDS)
+  }
+
   func testBadParams() throws {
     let tool = UuidTool(arguments: ["app", "-x", "foo"])
     XCTAssertThrowsError(try tool.run())

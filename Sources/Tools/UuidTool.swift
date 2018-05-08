@@ -65,6 +65,6 @@ public final class UuidTool {
 
     return stride(from: 0, to: reps, by: 1)
       .map({ _ in NSUUID().uuidString })
-      .map({ uc ? $0.uppercased() : $0 })
+      .map({ uc ? $0 : $0.lowercased() })
   }
 }

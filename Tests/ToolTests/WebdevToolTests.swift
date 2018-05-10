@@ -11,4 +11,11 @@ class WebdevToolTests: XCTestCase {
     // actually serves "/".
     XCTAssertEqual(1, 1)
   }
+
+  func testServesSubdirectories() {
+  }
+
+  func testCliParams() {
+    
+  }
 }

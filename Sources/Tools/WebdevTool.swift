@@ -75,20 +75,76 @@ public final class WebdevTool {
     return (f, p)
   }
 
+  private func serveTree(_ root: String) -> ((HttpRequest) -> HttpResponse) {
+    let defaults = ["index.html", "index.htm", "default.html"]
+
+    return { r in
+      let fpath = root + r.path.split("?")[0]
+      let status = FileStat.exists(atPath: fpath)
+
+      switch status {
+      case .file :
+        if let file = try? fpath.openForReading() {
+          return .raw(200, "OK", [:], { writer in
+            try? writer.write(file)
+            file.close()
+          })
+        }
+      case .directory:
+        for page in defaults {
+          let newPath = fpath + page
+          if let file = try? newPath.openForReading() {
+            return .raw(200, "OK", [:], { writer in
+              try? writer.write(file)
+              file.close()
+            })
+          }
+        }
+      case .notFound:
+        return .notFound
+      }
+      return .notFound
+    }
+  }
+
+  enum FileStat {
+    // Maybe move this to some shared code area between all the tools
+
+    case file
+    case directory
+    case notFound
+
+    public static func exists(atPath: String) -> FileStat {
+      var isDirectory = ObjCBool(true)
+      let exists = FileManager.default.fileExists(atPath: atPath, isDirectory: &isDirectory)
+
+      if !exists {
+        return .notFound
+      }
+      if isDirectory.boolValue {
+        return .directory
+      }
+      return .file
+    }
+  }
+
   private func newServer(_ folder: String) -> HttpServer {
     let server = HttpServer()
     let fm = FileManager.default
+
+    // Allow JS routers to work....
     let mw = { (r: HttpRequest) -> HttpResponse? in
-      // Allow JS routers to work....
-      NSLog("\(r.method) \(r.path)")
-      if !fm.fileExists(atPath: folder + r.path) {
+
+      let fpath = r.path.split("?")[0]
+      NSLog("\(r.method) \(fpath)")
+
+      if !fm.fileExists(atPath: folder + fpath) {
         r.path = "/"
       }
       return nil
     }
 
-    let defaults = ["index.html", "index.htm", "default.html"]
-    server["/:path"] = shareFilesFromDirectory(folder, defaults: defaults)
+    server["/:path"] = serveTree(folder)
     server.middleware = [mw]
 
     return server

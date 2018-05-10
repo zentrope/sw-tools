@@ -29,7 +29,7 @@ build:
 	swift build
 
 release:
-	swift build -c release --static-swift-stdlib
+	swift build -c release --static-swift-stdlib -Xswiftc -whole-module-optimization
 
 test:
 	swift test

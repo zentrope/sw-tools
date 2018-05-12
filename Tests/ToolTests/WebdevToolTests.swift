@@ -1,6 +1,6 @@
 import Foundation
 import XCTest
-import Tools
+import WebDevTool
 
 class WebdevToolTests: XCTestCase {
 

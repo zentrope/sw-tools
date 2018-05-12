@@ -17,9 +17,9 @@
 //
 
 import Foundation
-import Utility
 import Swifter
 import Dispatch
+import Utility
 
 public struct WebdevTool {
 
@@ -51,7 +51,8 @@ public struct WebdevTool {
   private func parseArgs() throws -> (String, Int) {
 
     let parser = ArgumentParser(
-      usage: "OPTIONS",
+      commandName: "webdev",
+      usage: "<options>",
       overview: "Serve simple web content simply")
 
     let port: OptionArgument<Int> = parser.add(

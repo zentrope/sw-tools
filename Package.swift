@@ -24,20 +24,14 @@ let package = Package(
   dependencies: [
     .package(url: "https://github.com/apple/swift-package-manager.git", from: "0.2.0"),
     .package(url: "https://github.com/httpswift/swifter.git", .upToNextMajor(from: "1.4.0")),
-    //
-    // This isn't a good lib in that it invokes process exit on parse errors,
-    // rather than returning a value or usage message.
-    //
-    .package(url: "https://github.com/dmulholland/ArgParse", from: "0.4.0"),
   ],
   targets: [
-    //
     .target(name: "uuid", dependencies: ["UuidTool"]),
-    .target(name: "UuidTool", dependencies: ["ArgParse"]),
+    .target(name: "UuidTool", dependencies: ["Utility"]),
     //
-    .target(name: "webdev", dependencies: ["Tools"]),
-    .target(name: "Tools", dependencies: ["Utility", "Swifter"]),
+    .target(name: "webdev", dependencies: ["WebDevTool"]),
+    .target(name: "WebDevTool", dependencies: ["Swifter", "Utility"]),
     //
-    .testTarget(name: "ToolTests", dependencies: ["Tools", "UuidTool"])
+    .testTarget(name: "ToolTests", dependencies: ["WebDevTool", "UuidTool"])
   ]
 )

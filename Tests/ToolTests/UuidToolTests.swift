@@ -39,17 +39,13 @@ class UidToolTests: XCTestCase {
     XCTAssertEqual(try runTool(args: ["-n", "200000"]).count, UuidTool.MAX_UUIDS)
   }
 
-  //
-  // Revive these when the arg parse lib I use doesn't force
-  // a process exit.
-  //
-  //  func testBadParams() throws {
-  //    let tool = UuidTool(arguments: ["app", "-x", "foo"])
-  //    XCTAssertThrowsError(try tool.run())
-  //  }
-  //
-  //  func testBadNumberParam() throws {
-  //    let tool = UuidTool(arguments: ["app", "-n", "foo"])
-  //    XCTAssertThrowsError(try tool.run())
-  //  }
+  func testBadParams() throws {
+    let tool = UuidTool(arguments: ["app", "-x", "foo"])
+    XCTAssertThrowsError(try tool.run())
+  }
+  
+  func testBadNumberParam() throws {
+    let tool = UuidTool(arguments: ["app", "-n", "foo"])
+    XCTAssertThrowsError(try tool.run())
+  }
 }

@@ -17,8 +17,7 @@
 //-----------------------------------------------------------------------------
 
 import Foundation
-//import Utility
-import ArgParse
+import Utility
 
 public struct UuidTool {
 
@@ -34,7 +33,7 @@ public struct UuidTool {
 
     return stride(from: 0, to: option.reps, by: 1)
       .map({ _ in NSUUID().uuidString })
-      .map({ option.uppercase ? $0 : $0.lowercased() })
+      .map({ option.ucase ? $0 : $0.lowercased() })
   }
 
   // MARK: Internal
@@ -54,30 +53,31 @@ public struct UuidTool {
   fileprivate struct Opts {
     // overkill: Trying this out just to learn.
     let reps: Int
-    let uppercase: Bool
+    let ucase: Bool
   }
 
-  private let helptext = """
-Generate UUID(s).
-
-USAGE:
-
-  uuid <options>
-
-OPTIONS:
-  --number, -n       The number of UUIDs to generate.
-  --uppercased, -u   Uppercase the UUID(s).
-  --help, -h         Display available options
-"""
-
   private func parseArgs() throws -> Opts {
-    let parser = ArgParser(helptext: helptext)
-    parser.newFlag("uppercase u")
-    parser.newInt("number n", fallback: 1)
-    parser.parse(self.arguments)
+    let parser = ArgumentParser(
+      commandName: "uuid",
+      usage: "<options>",
+      overview: "Generate UUIDs")
 
-    let reps = self.setBounds(n: parser.getInt("number"))
-    let uc = parser.getFlag("uppercase")
-    return Opts(reps: reps, uppercase: uc)
+    let number: OptionArgument<Int> = parser.add(
+      option: "--number",
+      shortName: "-n",
+      kind: Int.self,
+      usage: "The number of UUID(s) to print.")
+
+    let upperc: OptionArgument<Bool> = parser.add(
+      option: "--uppercase",
+      shortName: "-u",
+      kind: Bool.self,
+      usage: "Uppercase UUIDs.")
+
+    let options = try parser.parse(self.arguments)
+    return Opts(
+      reps: self.setBounds(n: options.get(number) ?? 1),
+      ucase: options.get(upperc) ?? false
+    )
   }
 }

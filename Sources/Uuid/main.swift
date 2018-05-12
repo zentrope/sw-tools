@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 //-----------------------------------------------------------------------------
 
-import Tools
+import UuidTool
 
 let tool = UuidTool()
 

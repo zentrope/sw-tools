@@ -22,6 +22,9 @@
 .PHONY: clean build release
 .DEFAULT_GOAL := help
 
+
+opts = --static-swift-stdlib -Xswiftc -Osize -Xswiftc -whole-module-optimization
+
 clean:
 	swift package clean
 
@@ -29,10 +32,14 @@ build:
 	swift build
 
 release:
-	swift build -c release --static-swift-stdlib -Xswiftc -whole-module-optimization
+	swift build -c release $(opts)
 
 test:
 	swift test
+
+xcode:
+	@rm -rf *.xcodeproj
+	@swift package generate-xcodeproj
 
 help: ## Show makefile based help
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) \

@@ -17,18 +17,29 @@
 //-----------------------------------------------------------------------------
 
 import Foundation
-import Utility
+//import Utility
+import ArgParse
 
-public final class UuidTool {
+public struct UuidTool {
 
   public static let MIN_UUIDS = 1
   public static let MAX_UUIDS = 1024
 
-  private let arguments: Array<String>
-  
   public init(arguments: [String] = CommandLine.arguments) {
     self.arguments = Array(arguments.dropFirst())
   }
+
+  public func run() throws -> Array<String> {
+    let option = try self.parseArgs()
+
+    return stride(from: 0, to: option.reps, by: 1)
+      .map({ _ in NSUUID().uuidString })
+      .map({ option.uppercase ? $0 : $0.lowercased() })
+  }
+
+  // MARK: Internal
+
+  private let arguments: Array<String>
 
   private func setBounds(n: Int) -> Int {
     if n < UuidTool.MIN_UUIDS {
@@ -40,31 +51,33 @@ public final class UuidTool {
     return n
   }
 
-  public func run() throws -> Array<String> {
-    
-    let parser = ArgumentParser(
-      usage: "<options>",
-      overview: "Generate a UUID.")
-    
-    let number: OptionArgument<Int> = parser.add(
-      option: "--number",
-      shortName: "-n",
-      kind: Int.self,
-      usage: "The number of UUIDs to generate.")
-    
-    let uppercased: OptionArgument<Bool> = parser.add(
-      option: "--uppercased",
-      shortName: "-u",
-      kind: Bool.self,
-      usage: "Uppercase the UUID(s).")
-    
-    let options = try parser.parse(self.arguments)
-    
-    let reps = self.setBounds(n: options.get(number) ?? UuidTool.MIN_UUIDS)
-    let uc = options.get(uppercased) == true
+  fileprivate struct Opts {
+    // overkill: Trying this out just to learn.
+    let reps: Int
+    let uppercase: Bool
+  }
 
-    return stride(from: 0, to: reps, by: 1)
-      .map({ _ in NSUUID().uuidString })
-      .map({ uc ? $0 : $0.lowercased() })
+  private let helptext = """
+Generate UUID(s).
+
+USAGE:
+
+  uuid <options>
+
+OPTIONS:
+  --number, -n       The number of UUIDs to generate.
+  --uppercased, -u   Uppercase the UUID(s).
+  --help, -h         Display available options
+"""
+
+  private func parseArgs() throws -> Opts {
+    let parser = ArgParser(helptext: helptext)
+    parser.newFlag("uppercase u")
+    parser.newInt("number n", fallback: 1)
+    parser.parse(self.arguments)
+
+    let reps = self.setBounds(n: parser.getInt("number"))
+    let uc = parser.getFlag("uppercase")
+    return Opts(reps: reps, uppercase: uc)
   }
 }

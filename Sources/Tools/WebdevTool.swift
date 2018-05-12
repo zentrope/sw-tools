@@ -21,7 +21,7 @@ import Utility
 import Swifter
 import Dispatch
 
-public final class WebdevTool {
+public struct WebdevTool {
 
   public static let DEFAULT_PORT = 3000
 
@@ -79,7 +79,7 @@ public final class WebdevTool {
     let defaults = ["index.html", "index.htm", "default.html"]
 
     return { r in
-      let fpath = root + r.path.split("?")[0]
+      let fpath = root + r.path.split(around: "?").0
       let status = FileStat.exists(atPath: fpath)
 
       switch status {
@@ -135,7 +135,7 @@ public final class WebdevTool {
     // Allow JS routers to work....
     let mw = { (r: HttpRequest) -> HttpResponse? in
 
-      let fpath = r.path.split("?")[0]
+      let fpath = r.path.split(around:"?").0
       NSLog("\(r.method) \(fpath)")
 
       if !fm.fileExists(atPath: folder + fpath) {

@@ -25,19 +25,19 @@
 
 opts = --static-swift-stdlib -Xswiftc -Osize -Xswiftc -whole-module-optimization
 
-clean:
+clean:  ## Clean build artifacts
 	swift package clean
 
-build:
+build: ## Build the tools (dev).
 	swift build
 
-release:
+release: ## Build to tools (release).
 	swift build -c release $(opts)
 
-test:
+test: ## Run the tests
 	swift test
 
-xcode:
+xcode: ## Build the xcode project files
 	@rm -rf *.xcodeproj
 	@swift package generate-xcodeproj
 

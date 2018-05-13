@@ -23,14 +23,14 @@ let package = Package(
   name: "SwiftTools",
   dependencies: [
     .package(url: "https://github.com/apple/swift-package-manager.git", from: "0.2.0"),
-    .package(url: "https://github.com/httpswift/swifter.git", .upToNextMajor(from: "1.4.0")),
+    .package(url: "https://github.com/swift-server/http.git", from: "0.1.0")
   ],
   targets: [
     .target(name: "uuid", dependencies: ["UuidTool"]),
     .target(name: "UuidTool", dependencies: ["Utility"]),
     //
     .target(name: "webdev", dependencies: ["WebDevTool"]),
-    .target(name: "WebDevTool", dependencies: ["Swifter", "Utility"]),
+    .target(name: "WebDevTool", dependencies: ["Utility", "HTTP"]),
     //
     .testTarget(name: "ToolTests", dependencies: ["WebDevTool", "UuidTool"])
   ]

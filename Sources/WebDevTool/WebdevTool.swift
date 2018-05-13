@@ -17,9 +17,8 @@
 //
 
 import Foundation
-import Swifter
-import Dispatch
 import Utility
+import HTTP
 
 public struct WebdevTool {
 
@@ -30,25 +29,23 @@ public struct WebdevTool {
   }
 
   public func run() throws {
-    let (folder, port) = try self.parseArgs()
-    let lock = DispatchSemaphore(value: 0)
-    let server = self.newServer(folder)
-
-    do {
-      NSLog("Serving web content in '\(folder)' on port \(port).")
-      try server.start(in_port_t(port), forceIPv4: true)
-      lock.wait()
-    } catch {
-      NSLog("Server error: \(error).")
-      lock.signal()
-    }
+    let config = try self.parseArgs()
+    let server = HTTPServer()
+    NSLog("Serving web content in '\(config.folder)' on port \(config.port).")
+    try server.start(port: config.port, handler: makeHandler(folder: config.folder));
+    RunLoop.current.run()
   }
 
   // MARK: Internal
 
   private let arguments: Array<String>
 
-  private func parseArgs() throws -> (String, Int) {
+  fileprivate struct Config {
+    let folder: String
+    let port: Int
+  }
+
+  private func parseArgs() throws -> Config {
 
     let parser = ArgumentParser(
       commandName: "webdev",
@@ -71,41 +68,12 @@ public struct WebdevTool {
     let cwd = FileManager.default.currentDirectoryPath
 
     let p = options.get(port) ?? WebdevTool.DEFAULT_PORT
-    let f = options.get(folder) ?? cwd
-
-    return (f, p)
-  }
-
-  private func serveTree(_ root: String) -> ((HttpRequest) -> HttpResponse) {
-    let defaults = ["index.html", "index.htm", "default.html"]
-
-    return { r in
-      let fpath = root + r.path.split(around: "?").0
-      let status = FileStat.exists(atPath: fpath)
-
-      switch status {
-      case .file :
-        if let file = try? fpath.openForReading() {
-          return .raw(200, "OK", [:], { writer in
-            try? writer.write(file)
-            file.close()
-          })
-        }
-      case .directory:
-        for page in defaults {
-          let newPath = fpath + page
-          if let file = try? newPath.openForReading() {
-            return .raw(200, "OK", [:], { writer in
-              try? writer.write(file)
-              file.close()
-            })
-          }
-        }
-      case .notFound:
-        return .notFound
-      }
-      return .notFound
+    var f = options.get(folder) ?? cwd // TODO: expand tilde
+    if f.hasSuffix("/") {
+      f.removeLast()
     }
+
+    return Config(folder: f, port: p)
   }
 
   enum FileStat {
@@ -129,25 +97,65 @@ public struct WebdevTool {
     }
   }
 
-  private func newServer(_ folder: String) -> HttpServer {
-    let server = HttpServer()
-    let fm = FileManager.default
+  private func makeHandler(folder: String) -> (HTTPRequest, HTTPResponseWriter) -> HTTPBodyProcessing {
+    let defaults = ["index.html", "index.htm", "default.html"]
 
-    // Allow JS routers to work....
-    let mw = { (r: HttpRequest) -> HttpResponse? in
+    return { (request: HTTPRequest, response: HTTPResponseWriter) -> HTTPBodyProcessing in
 
-      let fpath = r.path.split(around:"?").0
-      NSLog("\(r.method) \(fpath)")
+      let target = request.target
+      NSLog("\(request.method) \(target)")
+      let fpath = folder + target.split(around: "?").0
+      let status = FileStat.exists(atPath: fpath)
 
-      if !fm.fileExists(atPath: folder + fpath) {
-        r.path = "/"
+      let headers = HTTPHeaders(dictionaryLiteral:
+        (HTTPHeaders.Name.server, "webdev"),
+        (HTTPHeaders.Name.cacheControl, "no-cache"))
+
+      let tryAlternatives = { (root: String) -> Bool in
+        for page in defaults {
+          let path = root + page;
+          if FileStat.exists(atPath: path) == .file {
+            response.writeHeader(status: .ok, headers: headers)
+            response.writeBody(path)
+            response.done()
+            return true
+          }
+        }
+        return false
       }
-      return nil
+
+      // TODO: What about the mime-type?
+      switch status {
+      case .file:
+        response.writeHeader(status: .ok, headers: headers)
+        response.writeBody(fpath)
+        response.done()
+
+      case .directory:
+        let _ = tryAlternatives(fpath)
+
+      case .notFound:
+        if !tryAlternatives(folder + "/") {
+          response.writeHeader(status: .notFound, headers: headers)
+          response.done()
+        }
+      }
+      return HTTPBodyProcessing.discardBody
     }
+  }
+}
 
-    server["/:path"] = serveTree(folder)
-    server.middleware = [mw]
+extension HTTPResponseWriter {
 
-    return server
+  // Fragile, but, basically, writes the contents of the path to the
+  // response.
+  public func writeBody(_ path: String) {
+    do {
+      let data = try Data(contentsOf: URL(fileURLWithPath: path))
+      return writeBody(data)
+    } catch {
+      NSLog("data error \(error)")
+      return writeBody("data error \(error)")
+    }
   }
 }

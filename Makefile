@@ -1,4 +1,4 @@
-#------------------------------------------------------------------------------
+#
 # Copyright (c) 2018-present Keith Irwin
 #
 # This program is free software: you can redistribute it and/or modify
@@ -15,9 +15,9 @@
 # along with this program.  If not, see
 # <http://www.gnu.org/licenses/>.
 #
-#------------------------------------------------------------------------------
+#
 # This Makefile is a launcher more than a maker.
-#------------------------------------------------------------------------------
+#
 
 .PHONY: clean build release
 .DEFAULT_GOAL := help

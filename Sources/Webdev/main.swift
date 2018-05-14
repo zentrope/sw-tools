@@ -5,9 +5,9 @@
 //  Created by Keith Irwin on 5/9/18.
 //
 
-import WebDevTool
+import Tools
 
-let tool = WebdevTool()
+let tool = Webdev()
 
 do {
   try tool.run()

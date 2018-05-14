@@ -26,12 +26,10 @@ let package = Package(
     .package(url: "https://github.com/swift-server/http.git", from: "0.1.0")
   ],
   targets: [
-    .target(name: "uuid", dependencies: ["UuidTool"]),
-    .target(name: "UuidTool", dependencies: ["Utility"]),
+    .target(name: "Tools", dependencies: ["Utility", "HTTP"]),
+    .target(name: "uuid", dependencies: ["Tools"]),
+    .target(name: "webdev", dependencies: ["Tools"]),
     //
-    .target(name: "webdev", dependencies: ["WebDevTool"]),
-    .target(name: "WebDevTool", dependencies: ["Utility", "HTTP"]),
-    //
-    .testTarget(name: "ToolTests", dependencies: ["WebDevTool", "UuidTool"])
+    .testTarget(name: "ToolsTests", dependencies: ["Tools"])
   ]
 )

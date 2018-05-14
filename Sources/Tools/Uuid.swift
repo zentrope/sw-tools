@@ -19,7 +19,7 @@
 import Foundation
 import Utility
 
-public struct UuidTool {
+public struct Uuid {
 
   public static let MIN_UUIDS = 1
   public static let MAX_UUIDS = 1024
@@ -41,11 +41,11 @@ public struct UuidTool {
   private let arguments: Array<String>
 
   private func setBounds(n: Int) -> Int {
-    if n < UuidTool.MIN_UUIDS {
-      return UuidTool.MIN_UUIDS
+    if n < Uuid.MIN_UUIDS {
+      return Uuid.MIN_UUIDS
     }
-    if n > UuidTool.MAX_UUIDS {
-      return UuidTool.MAX_UUIDS
+    if n > Uuid.MAX_UUIDS {
+      return Uuid.MAX_UUIDS
     }
     return n
   }

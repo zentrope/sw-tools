@@ -20,7 +20,7 @@ import Foundation
 import Utility
 import HTTP
 
-public struct WebdevTool {
+public struct Webdev {
 
   public static let DEFAULT_PORT = 3000
 
@@ -56,7 +56,7 @@ public struct WebdevTool {
       option: "--port",
       shortName: "-p",
       kind: Int.self,
-      usage: "The port (default \(WebdevTool.DEFAULT_PORT)).")
+      usage: "The port (default \(Webdev.DEFAULT_PORT)).")
 
     let folder: OptionArgument<String> = parser.add(
       option: "--folder",
@@ -67,7 +67,7 @@ public struct WebdevTool {
     let options = try parser.parse(self.arguments)
     let cwd = FileManager.default.currentDirectoryPath
 
-    let p = options.get(port) ?? WebdevTool.DEFAULT_PORT
+    let p = options.get(port) ?? Webdev.DEFAULT_PORT
     var f = options.get(folder) ?? cwd // TODO: expand tilde
     if f.hasSuffix("/") {
       f.removeLast()

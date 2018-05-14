@@ -1,8 +1,8 @@
 import Foundation
 import XCTest
-import WebDevTool
+import Tools
 
-class WebdevToolTests: XCTestCase {
+class WebdevTests: XCTestCase {
 
   func testPending() throws {
     // not sure what to test. Maybe create a temp dir,
@@ -16,6 +16,6 @@ class WebdevToolTests: XCTestCase {
   }
 
   func testCliParams() {
-    
+
   }
 }

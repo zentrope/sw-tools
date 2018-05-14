@@ -16,12 +16,11 @@
 // <http://www.gnu.org/licenses/>.
 //-----------------------------------------------------------------------------
 
-import UuidTool
-
-let tool = UuidTool()
+import Foundation
+import Tools
 
 do {
-  let results = try tool.run()
+  let results = try Uuid().run()
   for uuid in results {
     print(uuid)
   }

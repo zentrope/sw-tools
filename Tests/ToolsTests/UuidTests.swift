@@ -1,14 +1,14 @@
 import Foundation
 import XCTest
-import UuidTool
+import Tools
 
-class UidToolTests: XCTestCase {
+class UuidTests: XCTestCase {
   // I'm not super interested in testing this kind of thing,
   // but these are useful reminder/examples about how to set
   // up tests like this.
 
   private func runTool(args: [String]) throws -> Array<String> {
-    return try UuidTool(arguments: ["_"] + args).run()
+    return try Uuid(arguments: ["_"] + args).run()
   }
 
   func testRepetitions() throws {
@@ -30,22 +30,22 @@ class UidToolTests: XCTestCase {
   }
 
   func testToLowResetsToZero() throws {
-    XCTAssertEqual(try runTool(args: ["-n", "0"]).count, UuidTool.MIN_UUIDS)
-    XCTAssertEqual(try runTool(args: ["-n", "-2"]).count, UuidTool.MIN_UUIDS)
+    XCTAssertEqual(try runTool(args: ["-n", "0"]).count, Uuid.MIN_UUIDS)
+    XCTAssertEqual(try runTool(args: ["-n", "-2"]).count, Uuid.MIN_UUIDS)
   }
 
   func testToHighResetsBounds() throws {
-    XCTAssertEqual(try runTool(args: ["-n", "1025"]).count, UuidTool.MAX_UUIDS)
-    XCTAssertEqual(try runTool(args: ["-n", "200000"]).count, UuidTool.MAX_UUIDS)
+    XCTAssertEqual(try runTool(args: ["-n", "1025"]).count, Uuid.MAX_UUIDS)
+    XCTAssertEqual(try runTool(args: ["-n", "200000"]).count, Uuid.MAX_UUIDS)
   }
 
   func testBadParams() throws {
-    let tool = UuidTool(arguments: ["app", "-x", "foo"])
+    let tool = Uuid(arguments: ["app", "-x", "foo"])
     XCTAssertThrowsError(try tool.run())
   }
-  
+
   func testBadNumberParam() throws {
-    let tool = UuidTool(arguments: ["app", "-n", "foo"])
+    let tool = Uuid(arguments: ["app", "-n", "foo"])
     XCTAssertThrowsError(try tool.run())
   }
 }

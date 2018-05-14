@@ -1,12 +1,41 @@
 # sw-tools
 
-Small project for writing tiny command line tools in Swift. This repo
-is also a handy way of remembering how to do CLI related techniques,
-such as parsing CLI arguments, or working with files and directories.
+## Rationale
+
+Sw-tools is a small project for writing tiny command line tools in
+Swift. Although I actually use these tools, this repo is mainly for
+learning. Some implementations will be more complicated than necessary
+as a proxy for (eventually) writing more complicated services in
+Swift.
 
 ## Tools
 
-- **uuid**: UUID generator.
+Implemented so far:
+
+- **uuid**: <br/>Print out one or more randomly generated UUIDs.
+
+- **webdev**:<br/> Serve a directory as a website, if 404, reload
+index.html (good for react-router or similar).
+
+## Usage
+
+Check out the project, then:
+
+    $ swift package update
+    $ make release
+
+and copy the executabe files in `.build/release` to a place on your
+`$PATH`:
+
+    $ cp .build/release/uuid ~/Bin
+    $ cp .build/release/webdev ~/Bin
+
+If you want to reduce the size of the binaries:
+
+    $ strip ~/Bin/uuid
+    $ strip ~/Bin/webdev
+
+Each utility has a `-h` and `--help` option for details.
 
 ## License
 

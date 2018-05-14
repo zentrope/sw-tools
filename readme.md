@@ -12,9 +12,9 @@ Swift.
 
 Implemented so far:
 
-- **uuid**: <br/>Print out one or more randomly generated UUIDs.
+- **[uuid](Sources/Uuid)**: <br/>Print out one or more randomly generated UUIDs.
 
-- **webdev**:<br/> Serve a directory as a website, if 404, reload
+- **[webdev](Sources/Webdev)**:<br/> Serve a directory as a website, if 404, reload
 index.html (good for react-router or similar).
 
 ## Usage

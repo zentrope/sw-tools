@@ -20,6 +20,8 @@ import Foundation
 import Utility
 import HTTP
 
+import Basics
+
 public struct Webdev {
 
   public static let DEFAULT_PORT = 3000
@@ -74,27 +76,6 @@ public struct Webdev {
     }
 
     return Config(folder: f, port: p)
-  }
-
-  enum FileStat {
-    // Maybe move this to some shared code area between all the tools
-
-    case file
-    case directory
-    case notFound
-
-    public static func exists(atPath: String) -> FileStat {
-      var isDirectory = ObjCBool(true)
-      let exists = FileManager.default.fileExists(atPath: atPath, isDirectory: &isDirectory)
-
-      if !exists {
-        return .notFound
-      }
-      if isDirectory.boolValue {
-        return .directory
-      }
-      return .file
-    }
   }
 
   private func makeHandler(folder: String) -> (HTTPRequest, HTTPResponseWriter) -> HTTPBodyProcessing {

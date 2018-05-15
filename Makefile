@@ -46,7 +46,7 @@ release: ## Build to tools (release).
 test: ## Run the tests
 	swift test
 
-xcode: ## Build the xcode project files
+ide: ## Build the xcode project files
 	@swift package generate-xcodeproj
 
 install: release ## Install apps into ~/Bin

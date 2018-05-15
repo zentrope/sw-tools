@@ -20,17 +20,17 @@
 import PackageDescription
 
 let package = Package(
-  name: "SwiftTools",
-  dependencies: [
-    .package(url: "https://github.com/apple/swift-package-manager.git", from: "0.2.0"),
-    .package(url: "https://github.com/swift-server/http.git", from: "0.1.0")
-  ],
-  targets: [
-    .target(name: "Basics", dependencies: []),
-    .target(name: "Tools", dependencies: ["Basics", "Utility", "HTTP"]),
-    .target(name: "uuid", dependencies: ["Tools"]),
-    .target(name: "webdev", dependencies: ["Tools"]),
-    //
-    .testTarget(name: "ToolsTests", dependencies: ["Tools"])
-  ]
+    name: "SwiftTools",
+    dependencies: [
+        .package(url: "https://github.com/apple/swift-package-manager.git", from: "0.2.0"),
+        .package(url: "https://github.com/swift-server/http.git", from: "0.1.0"),
+    ],
+    targets: [
+        .target(name: "Basics", dependencies: []),
+        .target(name: "Tools", dependencies: ["Basics", "Utility", "HTTP"]),
+        .target(name: "uuid", dependencies: ["Tools"]),
+        .target(name: "webdev", dependencies: ["Tools"]),
+        //
+        .testTarget(name: "ToolsTests", dependencies: ["Tools"])
+    ]
 )

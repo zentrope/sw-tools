@@ -34,7 +34,8 @@ public struct Webdev {
     let config = try self.parseArgs()
     let server = HTTPServer()
     NSLog("Serving web content in '\(config.folder)' on port \(config.port).")
-    try server.start(port: config.port, handler: makeHandler(folder: config.folder));
+    try server.start(port: config.port,
+                     handler: makeHandler(folder: config.folder));
     RunLoop.current.run()
   }
 
@@ -78,7 +79,8 @@ public struct Webdev {
     return Config(folder: f, port: p)
   }
 
-  private func makeHandler(folder: String) -> (HTTPRequest, HTTPResponseWriter) -> HTTPBodyProcessing {
+  private func makeHandler(folder: String) -> HTTPRequestHandler {
+
     let defaults = ["index.html", "index.htm", "default.html"]
 
     return { (request: HTTPRequest, response: HTTPResponseWriter) -> HTTPBodyProcessing in
@@ -92,34 +94,16 @@ public struct Webdev {
         (HTTPHeaders.Name.server, "webdev"),
         (HTTPHeaders.Name.cacheControl, "no-cache"))
 
-      let tryAlternatives = { (root: String) -> Bool in
-        for page in defaults {
-          let path = root + page;
-          if FileStat.exists(atPath: path) == .file {
-            response.writeHeader(status: .ok, headers: headers)
-            response.writeBody(path)
-            response.done()
-            return true
-          }
-        }
-        return false
-      }
-
       // TODO: What about the mime-type?
       switch status {
       case .file:
-        response.writeHeader(status: .ok, headers: headers)
-        response.writeBody(fpath)
-        response.done()
+        response.writeFile(fpath, headers: headers)
 
       case .directory:
-        let _ = tryAlternatives(fpath)
+        response.writeIfFound(fpath, headers: headers, pages: defaults)
 
       case .notFound:
-        if !tryAlternatives(folder + "/") {
-          response.writeHeader(status: .notFound, headers: headers)
-          response.done()
-        }
+        response.writeIfFound(folder + "/", headers: headers, pages: defaults)
       }
       return HTTPBodyProcessing.discardBody
     }
@@ -127,16 +111,33 @@ public struct Webdev {
 }
 
 extension HTTPResponseWriter {
+  // Extend the ResponseWriter with some convenience methods.
 
-  // Fragile, but, basically, writes the contents of the path to the
-  // response.
-  public func writeBody(_ path: String) {
+  public func writeIfFound(_ root: String, headers: HTTPHeaders, pages: [String]) {
+    for page in pages {
+      let path = root + page;
+      if FileStat.exists(atPath: path) == .file {
+        self.writeFile(path, headers: headers)
+        return
+      }
+    }
+    self.writeError(.notFound, headers: headers, error: "No index page found.")
+  }
+
+  public func writeFile(_ path: String, headers: HTTPHeaders) {
     do {
       let data = try Data(contentsOf: URL(fileURLWithPath: path))
-      return writeBody(data)
+      self.writeHeader(status: .ok, headers: headers)
+      self.writeBody(data)
+      self.done()
     } catch {
-      NSLog("data error \(error)")
-      return writeBody("data error \(error)")
+      self.writeError(.internalServerError, headers: headers, error: "data error \(error)")
     }
+  }
+
+  private func writeError(_ status: HTTPResponseStatus, headers: HTTPHeaders, error: String) {
+    self.writeHeader(status: status, headers: headers)
+    self.writeBody(error)
+    self.done()
   }
 }

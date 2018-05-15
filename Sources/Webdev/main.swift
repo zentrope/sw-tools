@@ -10,7 +10,7 @@ import Tools
 let tool = Webdev()
 
 do {
-  try tool.run()
+    try tool.run()
 } catch {
-  print("ERROR: \(error)")
+    print("ERROR: \(error)")
 }

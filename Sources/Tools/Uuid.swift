@@ -21,63 +21,63 @@ import Utility
 
 public struct Uuid {
 
-  public static let MIN_UUIDS = 1
-  public static let MAX_UUIDS = 1024
+    public static let MIN_UUIDS = 1
+    public static let MAX_UUIDS = 1024
 
-  public init(arguments: [String] = CommandLine.arguments) {
-    self.arguments = Array(arguments.dropFirst())
-  }
-
-  public func run() throws -> Array<String> {
-    let option = try self.parseArgs()
-
-    return stride(from: 0, to: option.reps, by: 1)
-      .map({ _ in NSUUID().uuidString })
-      .map({ option.ucase ? $0 : $0.lowercased() })
-  }
-
-  // MARK: Internal
-
-  private let arguments: Array<String>
-
-  private func setBounds(n: Int) -> Int {
-    if n < Uuid.MIN_UUIDS {
-      return Uuid.MIN_UUIDS
+    public init(arguments: [String] = CommandLine.arguments) {
+        self.arguments = Array(arguments.dropFirst())
     }
-    if n > Uuid.MAX_UUIDS {
-      return Uuid.MAX_UUIDS
+
+    public func run() throws -> Array<String> {
+        let option = try self.parseArgs()
+        
+        return stride(from: 0, to: option.reps, by: 1)
+            .map({ _ in NSUUID().uuidString })
+            .map({ option.ucase ? $0 : $0.lowercased() })
     }
-    return n
-  }
 
-  fileprivate struct Opts {
-    // overkill: Trying this out just to learn.
-    let reps: Int
-    let ucase: Bool
-  }
+    // MARK: Internal
 
-  private func parseArgs() throws -> Opts {
-    let parser = ArgumentParser(
-      commandName: "uuid",
-      usage: "<options>",
-      overview: "Generate UUIDs")
+    private let arguments: Array<String>
 
-    let number: OptionArgument<Int> = parser.add(
-      option: "--number",
-      shortName: "-n",
-      kind: Int.self,
-      usage: "The number of UUID(s) to print.")
+    private func setBounds(n: Int) -> Int {
+        if n < Uuid.MIN_UUIDS {
+            return Uuid.MIN_UUIDS
+        }
+        if n > Uuid.MAX_UUIDS {
+            return Uuid.MAX_UUIDS
+        }
+        return n
+    }
 
-    let upperc: OptionArgument<Bool> = parser.add(
-      option: "--uppercase",
-      shortName: "-u",
-      kind: Bool.self,
-      usage: "Uppercase UUIDs.")
+    fileprivate struct Opts {
+        // overkill: Trying this out just to learn.
+        let reps: Int
+        let ucase: Bool
+    }
 
-    let options = try parser.parse(self.arguments)
-    return Opts(
-      reps: self.setBounds(n: options.get(number) ?? 1),
-      ucase: options.get(upperc) ?? false
-    )
-  }
+    private func parseArgs() throws -> Opts {
+        let parser = ArgumentParser(
+            commandName: "uuid",
+            usage: "<options>",
+            overview: "Generate UUIDs")
+
+        let number: OptionArgument<Int> = parser.add(
+            option: "--number",
+            shortName: "-n",
+            kind: Int.self,
+            usage: "The number of UUID(s) to print.")
+
+        let upperc: OptionArgument<Bool> = parser.add(
+            option: "--uppercase",
+            shortName: "-u",
+            kind: Bool.self,
+            usage: "Uppercase UUIDs.")
+
+        let options = try parser.parse(self.arguments)
+        return Opts(
+            reps: self.setBounds(n: options.get(number) ?? 1),
+            ucase: options.get(upperc) ?? false
+        )
+    }
 }

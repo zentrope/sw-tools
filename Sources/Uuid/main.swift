@@ -20,10 +20,10 @@ import Foundation
 import Tools
 
 do {
-  let results = try Uuid().run()
-  for uuid in results {
-    print(uuid)
-  }
+    let results = try Uuid().run()
+    for uuid in results {
+        print(uuid)
+    }
 } catch {
-  print("ERROR: \(error)")
+    print("ERROR: \(error)")
 }

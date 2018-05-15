@@ -19,21 +19,25 @@
 import Foundation
 
 public enum FileStat {
-    
-    case file
-    case directory
+
+    case existsAndIsFile
+    case existsAndIsDirectory
     case notFound
-    
+
+    public static func isFileAndExists(atPath: String) -> Bool {
+        return exists(atPath: atPath) == .existsAndIsFile
+    }
+
     public static func exists(atPath: String) -> FileStat {
         var isDirectory = ObjCBool(true)
         let exists = FileManager.default.fileExists(atPath: atPath, isDirectory: &isDirectory)
-        
+
         if !exists {
             return .notFound
         }
         if isDirectory.boolValue {
-            return .directory
+            return .existsAndIsDirectory
         }
-        return .file
+        return .existsAndIsFile
     }
 }

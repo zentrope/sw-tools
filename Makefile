@@ -25,6 +25,15 @@
 
 opts = --static-swift-stdlib -Xswiftc -Osize -Xswiftc -whole-module-optimization
 
+install_dir = $(HOME)/Bin
+uuid_install = $(install_dir)/uuid
+webdev_install = $(install_dir)/webdev
+
+uuid_rel = .build/release/uuid
+webdev_rel = .build/release/webdev
+
+tools = $(uuid_install) $(webdev_install)
+
 clean:  ## Clean build artifacts
 	swift package clean
 
@@ -38,8 +47,11 @@ test: ## Run the tests
 	swift test
 
 xcode: ## Build the xcode project files
-	@rm -rf *.xcodeproj
 	@swift package generate-xcodeproj
+
+install: release ## Install apps into ~/Bin
+	install $(uuid_rel) $(webdev_rel) $(install_dir)
+	strip $(uuid_install) $(webdev_install)
 
 help: ## Show makefile based help
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) \

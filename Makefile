@@ -23,7 +23,9 @@
 .DEFAULT_GOAL := help
 
 
-opts = --static-swift-stdlib -Xswiftc -Osize -Xswiftc -whole-module-optimization
+opts = --static-swift-stdlib -Xswiftc -Osize \
+-Xswiftc -whole-module-optimization \
+-Xswiftc -suppress-warnings
 
 install_dir = $(HOME)/Bin
 uuid_install = $(install_dir)/uuid
